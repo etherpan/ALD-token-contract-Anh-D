@@ -33,6 +33,6 @@ Tokens from taxes go to 3 wallets and 2% to each wallet
  We prefer option 1
 
 
-______-
 Token need to be deploy on testnet and test on :https://pancake.kiemtienonline360.com/#/swap
+
 
