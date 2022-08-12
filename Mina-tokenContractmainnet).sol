@@ -394,19 +394,19 @@ contract Mina is Context, IERC20, Ownable {
     mapping (address => bool) private _isBCheck;
 
     uint256 private _buyLiquidityFee = 1;
-    uint256 public _buyMarketingFee = 5;
+    uint256 public _buyMarketingFee = 2;
     uint256 public _buyTeamFee = 0;
     
     uint256 public _sellLiquidityFee = 1;
-    uint256 public _sellMarketingFee = 5;
+    uint256 public _sellMarketingFee = 2;
     uint256 public _sellTeamFee = 0;
 
     uint256 public _liquidityShare = 4;
     uint256 public _marketingShare = 4;
     uint256 public _teamShare = 16;
 
-    uint256 public _totalTaxIfBuying = 6;
-    uint256 public _totalTaxIfSelling = 6;
+    uint256 public _totalTaxIfBuying = 3;
+    uint256 public _totalTaxIfSelling = 3;
     uint256 public _totalDistributionShares = 24;
 
     uint256 private _totalSupply = 10000000000000 *  10**_decimals;
