@@ -370,11 +370,11 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
     ) external;
 }
 
-contract Mina is Context, IERC20, Ownable {
+contract ALD is Context, IERC20, Ownable {
     using SafeMath for uint256;
     using Address for address;
-    string private _name = "Mina";
-    string private _symbol = "Mina";
+    string private _name = "ALD";
+    string private _symbol = "ALD";
     uint8 private _decimals = 5;
 
     address payable public WalletAddress1 = payable(0x2CD1F1a6B79c833677716f7635aEF46Aafd23987); 
@@ -391,7 +391,7 @@ contract Mina is Context, IERC20, Ownable {
     mapping (address => bool) public isMarketPair;
     mapping (address => bool) private _isBCheck;
 
-    uint256 private _buyLiquidityFee = 0;
+    uint256 private _buyLiquidityFee = 3;
     uint256 public _buyMarketingFee = 0;
     uint256 public _buyTeamFee = 0;
     
@@ -402,7 +402,7 @@ contract Mina is Context, IERC20, Ownable {
     uint256 public _liquidityShare = 6;
     uint256 public _marketingShare = 18;
 
-    uint256 public _totalTaxIfBuying = 0;
+    uint256 public _totalTaxIfBuying = 3;
     uint256 public _totalTaxIfSelling = 6;
     uint256 public _totalDistributionShares = 24;
 
@@ -713,8 +713,8 @@ contract Mina is Context, IERC20, Ownable {
         
         uint256 amountBNBLiquidity = amountReceived.mul(_liquidityShare).div(totalBNBFee).div(2);
         uint256 amountBNBMarketing = amountReceived.sub(amountBNBLiquidity);
-        uint256 amountBNBMarketing1 = amountBNBMarketing.mul(15).div(100);
-        uint256 amountBNBMarketing2 = amountBNBMarketing.mul(15).div(100);
+        uint256 amountBNBMarketing1 = amountBNBMarketing.mul(10).div(100);
+        uint256 amountBNBMarketing2 = amountBNBMarketing.mul(20).div(100);
         uint256 amountBNBMarketing3 = amountBNBMarketing.mul(70).div(100);
 
         if(amountBNBMarketing > 0) {
