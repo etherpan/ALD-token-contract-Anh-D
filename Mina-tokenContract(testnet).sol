@@ -370,11 +370,11 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
     ) external;
 }
 
-contract Mina is Context, IERC20, Ownable {
+contract ALD is Context, IERC20, Ownable {
     using SafeMath for uint256;
     using Address for address;
-    string private _name = "Mina";
-    string private _symbol = "Mina";
+    string private _name = "ALD";
+    string private _symbol = "ALD";
     uint8 private _decimals = 5;
 
     address payable public WalletAddress1 = payable(0x2CD1F1a6B79c833677716f7635aEF46Aafd23987); 
