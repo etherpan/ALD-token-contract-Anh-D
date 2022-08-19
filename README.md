@@ -14,5 +14,5 @@ When reach 100000 tokens and contract address, Than tokens be sold to bnb automa
  20% of total fee to wallet 2</br>
  70% of total fee to wallet 3</br>
 
-Token need to be deploy on testnet and test on :https://pancake.kiemtienonline360.com/#/swap
+Token need to be deploy on testnet and test on :https://pancake.kiemtienonline360.com/#/swap</br>
 testnet and mainnet: 2 file
