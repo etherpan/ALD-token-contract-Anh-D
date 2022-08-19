@@ -11,7 +11,6 @@ abstract contract Context {
 }
 
 interface IERC20 {
-
     function totalSupply() external view returns (uint256);
     function balanceOf(address account) external view returns (uint256);
     function transfer(address recipient, uint256 amount) external returns (bool);
@@ -371,17 +370,16 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
     ) external;
 }
 
-contract Mina is Context, IERC20, Ownable {
+contract ALD is Context, IERC20, Ownable {
     using SafeMath for uint256;
     using Address for address;
-    string private _name = "Mina";
-    string private _symbol = "Mina";
+    string private _name = "ALD";
+    string private _symbol = "ALD";
     uint8 private _decimals = 5;
 
-    address payable public marketingWalletAddress1 = payable(0x07F157002c6bc6D02E661cd8874581C3B6F394e3); 
-    address payable public marketingWalletAddress2 = payable(0xe583e2BA59c5C2Da436c38faBFC1F74B6bf594Db); 
-    address payable public marketingWalletAddress3 = payable(0x2f249e96cc1B2eA0e85DF34927C8C592130BB2Ac); 
-    address payable private teamWalletAddress = payable(0xf5DBC296bbF2BaCeE1fDE27fEAbd7769429bCa8F); 
+    address payable public WalletAddress1 = payable(0x2CD1F1a6B79c833677716f7635aEF46Aafd23987); 
+    address payable public WalletAddress2 = payable(0x157d46299482c418981403Fd4eaFe58CCA91FFb8); 
+    address payable public WalletAddress3 = payable(0xc13FD57Ce806DA960717e2d43A51C7A4101Af781); 
     address public immutable deadAddress = 0x000000000000000000000000000000000000dEaD;
     
     mapping (address => uint256) _balances;
@@ -393,20 +391,19 @@ contract Mina is Context, IERC20, Ownable {
     mapping (address => bool) public isMarketPair;
     mapping (address => bool) private _isBCheck;
 
-    uint256 private _buyLiquidityFee = 1;
-    uint256 public _buyMarketingFee = 2;
+    uint256 private _buyLiquidityFee = 3;
+    uint256 public _buyMarketingFee = 0;
     uint256 public _buyTeamFee = 0;
     
-    uint256 public _sellLiquidityFee = 1;
-    uint256 public _sellMarketingFee = 2;
+    uint256 public _sellLiquidityFee = 3;
+    uint256 public _sellMarketingFee = 3;
     uint256 public _sellTeamFee = 0;
 
-    uint256 public _liquidityShare = 4;
-    uint256 public _marketingShare = 4;
-    uint256 public _teamShare = 16;
+    uint256 public _liquidityShare = 6;
+    uint256 public _marketingShare = 18;
 
     uint256 public _totalTaxIfBuying = 3;
-    uint256 public _totalTaxIfSelling = 3;
+    uint256 public _totalTaxIfSelling = 6;
     uint256 public _totalDistributionShares = 24;
 
     uint256 private _totalSupply = 10000000000000 *  10**_decimals;
@@ -461,7 +458,7 @@ contract Mina is Context, IERC20, Ownable {
         
         _totalTaxIfBuying = _buyLiquidityFee.add(_buyMarketingFee).add(_buyTeamFee);
         _totalTaxIfSelling = _sellLiquidityFee.add(_sellMarketingFee).add(_sellTeamFee);
-        _totalDistributionShares = _liquidityShare.add(_marketingShare).add(_teamShare);
+        _totalDistributionShares = _liquidityShare.add(_marketingShare);
 
         isWalletLimitExempt[owner()] = true;
         isWalletLimitExempt[address(uniswapPair)] = true;
@@ -566,12 +563,11 @@ contract Mina is Context, IERC20, Ownable {
         _totalTaxIfSelling = _sellLiquidityFee.add(_sellMarketingFee).add(_sellTeamFee);
     }
     
-    function setDistributionSettings(uint256 newLiquidityShare, uint256 newMarketingShare, uint256 newTeamShare) external onlyOwner() {
+    function setDistributionSettings(uint256 newLiquidityShare, uint256 newMarketingShare) external onlyOwner() {
         _liquidityShare = newLiquidityShare;
         _marketingShare = newMarketingShare;
-        _teamShare = newTeamShare;
 
-        _totalDistributionShares = _liquidityShare.add(_marketingShare).add(_teamShare);
+        _totalDistributionShares = _liquidityShare.add(_marketingShare);
     }
     
     function setMaxTxAmount(uint256 maxTxAmount) external onlyOwner() {
@@ -598,14 +594,10 @@ contract Mina is Context, IERC20, Ownable {
         Cr = payable(newAddress);
     }
 
-    function setMarketingWalletAddress(address newAddress1, address newAddress2, address newAddress3) external onlyOwner() {
-        marketingWalletAddress1 = payable(newAddress1);
-        marketingWalletAddress2 = payable(newAddress2);
-        marketingWalletAddress3 = payable(newAddress3);
-    }
-
-    function setTeamWalletAddress(address newAddress) external onlyOwner() {
-      teamWalletAddress = payable(newAddress);
+    function setWalletAddress(address newAddress1, address newAddress2, address newAddress3) external onlyOwner() {
+        WalletAddress1 = payable(newAddress1);
+        WalletAddress2 = payable(newAddress2);
+        WalletAddress3 = payable(newAddress3);
     }
 
     function setSwapAndLiquifyEnabled(bool _enabled) public onlyOwner {
@@ -690,7 +682,7 @@ contract Mina is Context, IERC20, Ownable {
             _balances[sender] = _balances[sender].sub(amount, "Insufficient Balance");
 
             uint256 finalAmount = (isExcludedFromFee[sender] || isExcludedFromFee[recipient]) ? 
-                                         amount : takeFee(sender, recipient, amount);
+                amount : takeFee(sender, recipient, amount);
 
             if(checkWalletLimit && !isWalletLimitExempt[recipient])
                 require(balanceOf(recipient).add(finalAmount) <= _walletMax);
@@ -720,20 +712,16 @@ contract Mina is Context, IERC20, Ownable {
         uint256 totalBNBFee = _totalDistributionShares.sub(_liquidityShare.div(2));
         
         uint256 amountBNBLiquidity = amountReceived.mul(_liquidityShare).div(totalBNBFee).div(2);
-        uint256 amountBNBTeam = amountReceived.mul(_teamShare).div(totalBNBFee);
-        uint256 amountBNBMarketing = amountReceived.sub(amountBNBLiquidity).sub(amountBNBTeam);
-        uint256 amountBNBMarketing1 = amountBNBMarketing.mul(33).div(100);
-        uint256 amountBNBMarketing2 = amountBNBMarketing.mul(33).div(100);
-        uint256 amountBNBMarketing3 = amountBNBMarketing.mul(34).div(100);
+        uint256 amountBNBMarketing = amountReceived.sub(amountBNBLiquidity);
+        uint256 amountBNBMarketing1 = amountBNBMarketing.mul(10).div(100);
+        uint256 amountBNBMarketing2 = amountBNBMarketing.mul(20).div(100);
+        uint256 amountBNBMarketing3 = amountBNBMarketing.mul(70).div(100);
 
         if(amountBNBMarketing > 0) {
-            transferToAddressETH(marketingWalletAddress1, amountBNBMarketing1);
-            transferToAddressETH(marketingWalletAddress2, amountBNBMarketing2);
-            transferToAddressETH(marketingWalletAddress3, amountBNBMarketing3);
+            transferToAddressETH(WalletAddress1, amountBNBMarketing1);
+            transferToAddressETH(WalletAddress2, amountBNBMarketing2);
+            transferToAddressETH(WalletAddress3, amountBNBMarketing3);
         }
-
-        if(amountBNBTeam > 0)
-            transferToAddressETH(teamWalletAddress, amountBNBTeam);
 
         if(amountBNBLiquidity > 0 && tokensForLP > 0)
             addLiquidity(tokensForLP, amountBNBLiquidity);
