@@ -1,6 +1,6 @@
 # smart-contract-Anh-D
 
-0% taxes buy  
+3% taxes buy  
 6% taxes sell
 
 Token from Taxes go to contract address
